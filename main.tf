@@ -134,7 +134,7 @@ resource "aws_security_group" "bastion_sg" {
 # Bastion Host
 resource "aws_instance" "bastion" {
   ami           = "ami-09f198bd1020c5cf8"
-  instance_type = "t3.micro"
+  instance_type = "t3.medium"
   subnet_id     = aws_subnet.public_subnets[0].id
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
   key_name      = "osaka"
@@ -236,7 +236,7 @@ resource "aws_lb_listener" "http" {
 resource "aws_launch_template" "app_lt" {
   name          = "app-launch-template"
   image_id      = "ami-09f198bd1020c5cf8"
-  instance_type = "t3.micro"
+  instance_type = "t3.medium"
   key_name      = "osaka"
 
   network_interfaces {
