@@ -154,7 +154,7 @@ resource "aws_security_group" "cassandra_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  
   ingress {
     from_port   = 22
     to_port     = 22
@@ -232,42 +232,36 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# Launch Template for Cassandra Server
-resource "aws_launch_template" "cassandra_lt" {
-  name          = "cassandra-launch-template"
-  image_id      = "ami-09f198bd1020c5cf8" # Replace with your Cassandra AMI
-  instance_type = "t3.large"               # Adjust instance type as needed
+# Launch Template
+resource "aws_launch_template" "app_lt" {
+  name          = "app-launch-template"
+  image_id      = "ami-09f198bd1020c5cf8"
+  instance_type = "t3.medium"
   key_name      = "osaka"
 
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.cassandra_sg.id]
-    subnet_id                   = aws_subnet.private_subnets[0].id # Adjust subnet if needed
+    subnet_id                   = aws_subnet.private_subnets[0].id
   }
 
   tags = {
-    Name = "cassandra-launch-template"
+    Name = "assignment4-launch-template"
   }
 }
 
-# Auto Scaling Group for Cassandra Server
-resource "aws_autoscaling_group" "cassandra_asg" {
+# Auto Scaling Group
+resource "aws_autoscaling_group" "app_asg" {
   launch_template {
-    id      = aws_launch_template.cassandra_lt.id
+    id      = aws_launch_template.app_lt.id
     version = "$Latest"
   }
 
-  vpc_zone_identifier = aws_subnet.private_subnets[*].id  # Use the private subnets
+  vpc_zone_identifier = aws_subnet.private_subnets[*].id
   desired_capacity    = 2
-  max_size            = 3
+  max_size            = 2
   min_size            = 1
-
-  target_group_arns = [aws_lb_target_group.app_tg.arn]  # Add to Load Balancer target group
-
-  health_check_type          = "ELB"
-  health_check_grace_period = 300
-  wait_for_capacity_timeout  = "0"
-
+  
 }
 
 # VPC Peering
