@@ -184,7 +184,7 @@ resource "aws_security_group" "cassandra_sg" {
 # Cassandra Application Server
 resource "aws_instance" "cassandra_server" {
   ami           = "ami-09f198bd1020c5cf8"
-  instance_type = "t3.medium"
+  instance_type = "t3.large"
   subnet_id     = aws_subnet.private_subnets[0].id
   vpc_security_group_ids = [aws_security_group.cassandra_sg.id]
   key_name      = "osaka"
